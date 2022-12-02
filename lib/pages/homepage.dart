@@ -74,6 +74,11 @@ class _HomePageState extends State<HomePage> {
                   itemCount: radios.length,
                   aspectRatio: 1.0,
                   enlargeCenterPage: true,
+                  // onPageChanged: (index) {
+                  //   final colorHex = radios[index].color;
+                  //   selectedColor = Color(int.tryParse(colorHex));
+                  //   setState(() {});
+                  // },
                   itemBuilder: (context, index) {
                     final rad = radios[index];
 
@@ -140,7 +145,10 @@ class _HomePageState extends State<HomePage> {
             alignment: Alignment.bottomCenter,
             child: [
               if (isPlaying)
-                "Playing Now - ${selectedRadio.name} FM".text.makeCentered(),
+                "Playing Now - ${selectedRadio.name} FM"
+                    .text
+                    .white
+                    .makeCentered(),
               Icon(
                 isPlaying
                     ? CupertinoIcons.stop_circle
