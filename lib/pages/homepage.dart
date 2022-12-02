@@ -23,7 +23,6 @@ class _HomePageState extends State<HomePage> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     fetchRadio();
 
@@ -70,70 +69,77 @@ class _HomePageState extends State<HomePage> {
             elevation: 0.0,
             // centerTitle: true,
           ).h(100.0).p16(),
-          VxSwiper.builder(
-              itemCount: radios.length,
-              aspectRatio: 1.0,
-              enlargeCenterPage: true,
-              itemBuilder: (context, index) {
-                final rad = radios[index];
+          radios != null
+              ? VxSwiper.builder(
+                  itemCount: radios.length,
+                  aspectRatio: 1.0,
+                  enlargeCenterPage: true,
+                  itemBuilder: (context, index) {
+                    final rad = radios[index];
 
-                return VxBox(
-                        child: ZStack(
-                  [
-                    Positioned(
-                        top: 0.0,
-                        right: 0.0,
-                        child: VxBox(
-                          child:
-                              rad.category.text.uppercase.white.make().px16(),
-                        )
-                            .height(30.0)
-                            .black
-                            .alignCenter
-                            .withRounded(value: 10.0)
-                            .make()),
-                    Align(
-                      alignment: Alignment.bottomCenter,
-                      child: VStack(
-                        [
-                          rad.name.text.white.bold.make(),
-                          5.heightBox,
-                          rad.tagline.text.sm.white.semiBold.make(),
-                        ],
-                        crossAlignment: CrossAxisAlignment.center,
-                      ),
-                    ),
-                    Align(
-                        alignment: Alignment.center,
-                        child: [
-                          Icon(
-                            CupertinoIcons.play_circle,
-                            color: Colors.white,
+                    return VxBox(
+                            child: ZStack(
+                      [
+                        Positioned(
+                            top: 0.0,
+                            right: 0.0,
+                            child: VxBox(
+                              child: rad.category.text.uppercase.white
+                                  .make()
+                                  .px16(),
+                            )
+                                .height(30.0)
+                                .black
+                                .alignCenter
+                                .withRounded(value: 10.0)
+                                .make()),
+                        Align(
+                          alignment: Alignment.bottomCenter,
+                          child: VStack(
+                            [
+                              rad.name.text.white.bold.make(),
+                              5.heightBox,
+                              rad.tagline.text.sm.white.semiBold.make(),
+                            ],
+                            crossAlignment: CrossAxisAlignment.center,
                           ),
-                          10.heightBox,
-                          "Double Tap to play".text.gray300.make(),
-                        ].vStack())
-                  ],
-                  clip: Clip.antiAlias,
-                ))
-                    .clip(Clip.antiAlias)
-                    .bgImage(
-                      DecorationImage(
-                          image: NetworkImage(rad.image),
-                          fit: BoxFit.cover,
-                          colorFilter: ColorFilter.mode(
-                              Colors.black.withOpacity(0.3), BlendMode.darken)),
-                    )
-                    .withRounded(value: 60.0)
-                    .border(color: Colors.black, width: 5.0)
-                    .make()
-                    .onInkDoubleTap(() {})
-                    .p16();
-              }).centered(),
+                        ),
+                        Align(
+                            alignment: Alignment.center,
+                            child: [
+                              Icon(
+                                CupertinoIcons.play_circle,
+                                color: Colors.white,
+                              ),
+                              10.heightBox,
+                              "Double Tap to play".text.gray300.make(),
+                            ].vStack())
+                      ],
+                      clip: Clip.antiAlias,
+                    ))
+                        .clip(Clip.antiAlias)
+                        .bgImage(
+                          DecorationImage(
+                              image: NetworkImage(rad.image),
+                              fit: BoxFit.cover,
+                              colorFilter: ColorFilter.mode(
+                                  Colors.black.withOpacity(0.3),
+                                  BlendMode.darken)),
+                        )
+                        .withRounded(value: 60.0)
+                        .border(color: Colors.black, width: 5.0)
+                        .make()
+                        .onInkDoubleTap(() {
+                      _playMusic(rad.url);
+                    }).p16();
+                  }).centered()
+              : Center(
+                  child: CircularProgressIndicator(),
+                ),
           Align(
             alignment: Alignment.bottomCenter,
             child: [
-              if(isPlaying)
+              if (isPlaying)
                 "Playing Now - ${selectedRadio.name} FM".text.makeCentered(),
               Icon(
                 isPlaying
@@ -141,7 +147,13 @@ class _HomePageState extends State<HomePage> {
                     : CupertinoIcons.play_circle,
                 color: Colors.white,
                 size: 60.0,
-              )
+              ).onInkTap(() {
+                if (isPlaying) {
+                  _audioPlayer.stop();
+                } else {
+                  _playMusic(selectedRadio.url);
+                }
+              })
             ].vStack(),
           )
               // .pOnly(bottom: 90.0)
