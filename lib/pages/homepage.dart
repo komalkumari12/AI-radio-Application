@@ -1,4 +1,4 @@
-
+import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -15,12 +15,22 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   late List<MyRadio> radios;
+  late MyRadio selectedRadio;
+  late Color selectedColor;
+  bool isPlaying = false;
+
+  final AudioPlayer _audioPlayer = AudioPlayer();
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
     fetchRadio();
+
+    _audioPlayer.onPlayerStateChanged.listen((state) {
+      isPlaying = state == PlayerState.playing;
+    });
+    setState(() {});
   }
 
   fetchRadio() async {
@@ -30,11 +40,19 @@ class _HomePageState extends State<HomePage> {
     setState(() {});
   }
 
+  _playMusic(String url) {
+    _audioPlayer.setSourceUrl(url);
+    selectedRadio = radios.firstWhere((element) => element.url == url);
+    print(selectedRadio.name);
+    setState(() {});
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       drawer: Drawer(),
       body: Stack(
+        // ignore: sort_child_properties_last
         children: [
           VxAnimatedBox()
               .size(context.screenWidth, context.screenHeight)
@@ -114,14 +132,20 @@ class _HomePageState extends State<HomePage> {
               }).centered(),
           Align(
             alignment: Alignment.bottomCenter,
-            child: Icon(
-              CupertinoIcons.stop_circle,
-              color: Colors.white,
-              size: 60.0,
-            ),
+            child: [
+              if(isPlaying)
+                "Playing Now - ${selectedRadio.name} FM".text.makeCentered(),
+              Icon(
+                isPlaying
+                    ? CupertinoIcons.stop_circle
+                    : CupertinoIcons.play_circle,
+                color: Colors.white,
+                size: 60.0,
+              )
+            ].vStack(),
           )
-          // .pOnly(bottom: 90.0)
-          .pOnly(bottom: context.percentHeight * 12)
+              // .pOnly(bottom: 90.0)
+              .pOnly(bottom: context.percentHeight * 12)
         ],
         fit: StackFit.expand,
         clipBehavior: Clip.antiAlias,
